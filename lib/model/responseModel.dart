@@ -6,16 +6,19 @@ class BookDataModel {
   final String description; //紹介文
   final String imageLink; //画像のリンク
   final String infoLink; //googleBookの紹介リンク
+  final String isbn10; //10桁のISBN
+  final String isbn13; //13桁のISBN
 
-  BookDataModel({
-    required this.title,
-    required this.subtitle,
-    required this.authors,
-    required this.publishedDate,
-    required this.description,
-    required this.imageLink,
-    required this.infoLink,
-  });
+  BookDataModel(
+      {required this.title,
+      required this.subtitle,
+      required this.authors,
+      required this.publishedDate,
+      required this.description,
+      required this.imageLink,
+      required this.infoLink,
+      required this.isbn10,
+      required this.isbn13});
 //required this.icon
   factory BookDataModel.fromJson(Map<String, dynamic> json) {
     var data = json['items'][0];
@@ -41,7 +44,15 @@ class BookDataModel {
             : "",
         infoLink: data['volumeInfo']['previewLink'] != null
             ? data['volumeInfo']['previewLink']
-            : "");
+            : "",
+        isbn10:
+            data['volumeInfo']['industryIdentifiers'][0]['identifier'] != null
+                ? data['volumeInfo']['industryIdentifiers'][0]['identifier']
+                : "",
+        isbn13:
+            data['volumeInfo']['industryIdentifiers'][1]['identifier'] != null
+                ? data['volumeInfo']['industryIdentifiers'][1]['identifier']
+                : "");
 
     return model;
   }
