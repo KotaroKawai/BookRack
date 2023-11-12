@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
+import '../components/api/bookData.dart';
 
 class Content {
   final String title;
@@ -86,9 +87,23 @@ class _HomeScreenState extends State<HomeScreen> {
       _isSwipingUp = false;
       _currentIndex = (_currentIndex + 1) % _contentOptions.length;
       _selectedContent = _contentOptions[_currentIndex];
+
+      addRandomBookToContentOptions();
+      //_contentOptions.add(Content(title: '新しいタイトル', text: '新しいテキスト', imageUrl: 'https://picsum.photos/id/6/400/300'));
     });
   }
 
+  void addRandomBookToContentOptions() async {
+    var bookData = await BookData().randomBookSearch();
+    // BookDataModelから必要な情報を抽出してContentオブジェクトを作成
+    var newContent = Content(
+      title: bookData.title,  // 本のタイトル
+      text: bookData.description,  // 本の紹介文
+      imageUrl: bookData.imageLink  // 画像リンク
+    );
+    // Contentオブジェクトをリストに追加
+    _contentOptions.add(newContent);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 _selectedContent.imageUrl ?? 'https://dummyimage.com/600x400/000/fff',
                 fit: BoxFit.cover,
               ),
+              Container(
+                color: Colors.white.withOpacity(0.25),
+              ),
               Container(//semi-transparent overlay
                 key: ValueKey(_currentIndex),
                 child: Column(
@@ -138,18 +156,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: const TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        fontFamily: 'MPLUSRounded1c',
+                        color: Colors.black,
                       ),
                     ),
                     Expanded(
                       child: Center(
                         // Display the text in a scrollable view to handle long texts
                         child: SingleChildScrollView(
-                          child: Text(
-                            _selectedContent.text,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 18.0,color: Colors.white),
-                          ),
+                          child: _selectedContent.text.isNotEmpty
+                            ? Container(
+                            padding: const EdgeInsets.all(8.0), // テキストの周りにパディングを追加
+                            decoration: BoxDecoration(
+                              color: Colors.grey, // 背景色
+                              borderRadius: BorderRadius.circular(10.0), // 角を丸くする
+                            ),
+                            child: Text(
+                              _selectedContent.text,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontFamily: 'MPLUSRounded1c',
+                                color: Colors.black,
+                              ),
+                            ),
+                          )
+                          : const SizedBox.shrink(),
                         ),
                       ),
                     ),
@@ -165,7 +197,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       scale: 2.0,
                       child: IconButton(// Bookmark button
                         icon: const Icon(Icons.bookmark),
-                        color: Colors.white,
+                        //color: Colors.black,
+                        color: Colors.black.withOpacity(0.7),
                         onPressed: () {// TODO: Bookmark action
                           
                         },
@@ -176,7 +209,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       scale: 2.0,
                       child: IconButton(// Like button
                         icon: const Icon(Icons.favorite),
-                        color: Colors.white,
+                        //color: Colors.black,
+                        color: Colors.black.withOpacity(0.7),
                         onPressed: () {// TODO: Like action
                           
                         },
@@ -187,7 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       scale: 2.0,
                       child: IconButton(// Share button
                         icon: const Icon(Icons.share),
-                        color: Colors.white,
+                        //color: Colors.black,
+                        color: Colors.black.withOpacity(0.7),
                         onPressed: () {// TODO: Share action
                           
                         },
