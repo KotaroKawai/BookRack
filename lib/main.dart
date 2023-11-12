@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/bookshelf_screen.dart';
 import 'screens/profile_screen.dart';
+import 'components/api/bookData.dart';
 
 void main() async {
   await BookData().randomBookSearch();
