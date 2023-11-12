@@ -4,7 +4,7 @@ import 'screens/bookshelf_screen.dart';
 import 'screens/profile_screen.dart';
 
 void main() async {
-  await BookData().randomBookSearch();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
