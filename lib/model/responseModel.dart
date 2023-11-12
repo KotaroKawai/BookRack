@@ -23,6 +23,13 @@ class BookDataModel {
   factory BookDataModel.fromJson(Map<String, dynamic> json) {
     var data = json['items'][0];
 
+    String isbn10 = "";
+    String isbn13 = "";
+    if (data['volumeInfo']['industryIdentifiers'][0]['type'] == "ISBN_10") {
+      isbn10 = data['volumeInfo']['industryIdentifiers'][0]['identifier'];
+      isbn13 = data['volumeInfo']['industryIdentifiers'][1]['identifier'];
+    }
+
     var model = BookDataModel(
         title: data['volumeInfo']['title'] != null
             ? data['volumeInfo']['title']
@@ -45,14 +52,8 @@ class BookDataModel {
         infoLink: data['volumeInfo']['previewLink'] != null
             ? data['volumeInfo']['previewLink']
             : "",
-        isbn10:
-            data['volumeInfo']['industryIdentifiers'][0]['identifier'] != null
-                ? data['volumeInfo']['industryIdentifiers'][0]['identifier']
-                : "",
-        isbn13:
-            data['volumeInfo']['industryIdentifiers'][1]['identifier'] != null
-                ? data['volumeInfo']['industryIdentifiers'][1]['identifier']
-                : "");
+        isbn10: isbn10,
+        isbn13: isbn13);
 
     return model;
   }
