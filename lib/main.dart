@@ -3,12 +3,12 @@ import 'screens/home_screen.dart';
 import 'screens/bookshelf_screen.dart';
 import 'screens/profile_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  await BookData().randomBookSearch();
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
