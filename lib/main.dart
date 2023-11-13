@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/bookshelf_screen.dart';
 import 'screens/profile_screen.dart';
-import 'components/api/bookData.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BookData().randomBookSearch();
   runApp(const MyApp());
 }
 
@@ -63,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'ホーム',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),//menu_book か import_contacts か好みによる
+            icon: Icon(Icons.menu_book), //menu_book か import_contacts か好みによる
             label: '本棚',
           ),
           BottomNavigationBarItem(

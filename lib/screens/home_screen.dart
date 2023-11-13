@@ -1,7 +1,8 @@
+import 'package:bookrack/model/response_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
-import '../components/api/bookData.dart';
+import '../components/api/bookdata_get.dart';
 
 class Content {
   final String title; //著者
@@ -11,7 +12,6 @@ class Content {
 
   Content({required this.title, required this.text, this.imageUrl, this.url});
 }
-
 
 class HomeScreen extends StatefulWidget {
   final String title;
@@ -25,11 +25,29 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Create a list of Content objects
   final List<Content> _contentOptions = [
-    Content(title: 'Title 1', text: 'あいうえお string.\n\nIt has multiple paragraphs for demonstration.', imageUrl: 'https://picsum.photos/id/1/400/300'),
-    Content(title: 'Title 2', text: 'かきくhe second option.\n\nIt also has several paragraphs to illustrate the point.', imageUrl: 'https://picsum.photos/id/2/400/300'),
-    Content(title: 'Title 3', text: 'さしすせそlooks like this.\n\nParagraphs are split for readability.', imageUrl: 'https://picsum.photos/id/3/400/300'),
-    Content(title: 'Title 4', text: 'たちつてと number four comes here.\n\nAgain, notice the paragraph separation.', imageUrl: 'https://picsum.photos/id/4/400/300'),
-    Content(title: 'Title 5', text: 'はひふへほxt string is presented here.\n\nThis concludes the set of examples.', imageUrl: 'https://picsum.photos/id/5/400/300'),
+    Content(
+        title: 'Title 1',
+        text: 'あいうえお string.\n\nIt has multiple paragraphs for demonstration.',
+        imageUrl: 'https://picsum.photos/id/1/400/300'),
+    Content(
+        title: 'Title 2',
+        text:
+            'かきくhe second option.\n\nIt also has several paragraphs to illustrate the point.',
+        imageUrl: 'https://picsum.photos/id/2/400/300'),
+    Content(
+        title: 'Title 3',
+        text: 'さしすせそlooks like this.\n\nParagraphs are split for readability.',
+        imageUrl: 'https://picsum.photos/id/3/400/300'),
+    Content(
+        title: 'Title 4',
+        text:
+            'たちつてと number four comes here.\n\nAgain, notice the paragraph separation.',
+        imageUrl: 'https://picsum.photos/id/4/400/300'),
+    Content(
+        title: 'Title 5',
+        text:
+            'はひふへほxt string is presented here.\n\nThis concludes the set of examples.',
+        imageUrl: 'https://picsum.photos/id/5/400/300'),
   ];
 
   // Randomly select a Content object
@@ -73,15 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
     _timer?.cancel();
     super.dispose();
   }
-  
+
   void _onSwipeUp() {
     setState(() {
       _isSwipingUp = true;
-      _currentIndex = _currentIndex == 0 ? _contentOptions.length - 1 : _currentIndex - 1;
+      _currentIndex =
+          _currentIndex == 0 ? _contentOptions.length - 1 : _currentIndex - 1;
       _selectedContent = _contentOptions[_currentIndex];
     });
   }
-  
+
   void _onSwipeDown() {
     setState(() {
       _isSwipingUp = false;
@@ -94,15 +113,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void addRandomBookToContentOptions() async {
-    var bookData = await BookData().randomBookSearch();
+    List<BookDataModel>? bookDatas = await BookData().randomBookSearch();
     // BookDataModelから必要な情報を抽出してContentオブジェクトを作成
-    var newContent = Content(
-      title: bookData.title,  // 本のタイトル
-      text: bookData.description,  // 本の紹介文
-      imageUrl: bookData.imageLink  // 画像リンク
-    );
-    // Contentオブジェクトをリストに追加
-    _contentOptions.add(newContent);
+    for (BookDataModel bookData in bookDatas!) {
+      var newContent = Content(
+          title: bookData.title, // 本のタイトル
+          text: bookData.description, // 本の紹介文
+          imageUrl: bookData.imageLink // 画像リンク
+          );
+      // Contentオブジェクトをリストに追加
+      _contentOptions.add(newContent);
+    }
   }
 
   @override
@@ -111,27 +132,29 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: GestureDetector( // スワイプ検出のためのGestureDetectorを追加
+      body: GestureDetector(
+        // スワイプ検出のためのGestureDetectorを追加
         // onVerticalDragUpdate: _onVerticalDragUpdate,
         onVerticalDragStart: _onVerticalDragStart,
         onVerticalDragEnd: _onVerticalDragEnd,
         child: AnimatedSwitcher(
-          duration: const Duration(seconds: 1), // Set a duration for the transition
+          duration:
+              const Duration(seconds: 1), // Set a duration for the transition
           transitionBuilder: (Widget child, Animation<double> animation) {
             // final inAnimation = Tween<Offset>(begin: Offset(0, -1), end: Offset(0, 0)).animate(animation);
             // final outAnimation = Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0)).animate(animation);
             final inAnimation = Tween<Offset>(
-              begin: Offset(0, _isSwipingUp ? 1 : -1), 
-              end: Offset.zero
-            ).animate(animation);
+                    begin: Offset(0, _isSwipingUp ? 1 : -1), end: Offset.zero)
+                .animate(animation);
 
             final outAnimation = Tween<Offset>(
-              begin: Offset(0, _isSwipingUp ? -1 : 1),
-              end: Offset.zero
-            ).animate(animation);
+                    begin: Offset(0, _isSwipingUp ? -1 : 1), end: Offset.zero)
+                .animate(animation);
 
             return SlideTransition(
-              position: ( child.key == ValueKey(_currentIndex) ) ? inAnimation : outAnimation,
+              position: (child.key == ValueKey(_currentIndex))
+                  ? inAnimation
+                  : outAnimation,
               child: child,
             );
           },
@@ -139,14 +162,17 @@ class _HomeScreenState extends State<HomeScreen> {
             key: ValueKey<int>(_currentIndex),
             fit: StackFit.expand,
             children: [
-              Image.network(//background image
-                _selectedContent.imageUrl ?? 'https://dummyimage.com/600x400/000/fff',
+              Image.network(
+                //background image
+                _selectedContent.imageUrl ??
+                    'https://dummyimage.com/600x400/000/fff',
                 fit: BoxFit.cover,
               ),
               Container(
                 color: Colors.white.withOpacity(0.25),
               ),
-              Container(//semi-transparent overlay
+              Container(
+                //semi-transparent overlay
                 key: ValueKey(_currentIndex),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,66 +191,72 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Display the text in a scrollable view to handle long texts
                         child: SingleChildScrollView(
                           child: _selectedContent.text.isNotEmpty
-                            ? Container(
-                            padding: const EdgeInsets.all(8.0), // テキストの周りにパディングを追加
-                            decoration: BoxDecoration(
-                              color: Colors.grey, // 背景色
-                              borderRadius: BorderRadius.circular(10.0), // 角を丸くする
-                            ),
-                            child: Text(
-                              _selectedContent.text,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontFamily: 'MPLUSRounded1c',
-                                color: Colors.black,
-                              ),
-                            ),
-                          )
-                          : const SizedBox.shrink(),
+                              ? Container(
+                                  padding: const EdgeInsets.all(
+                                      8.0), // テキストの周りにパディングを追加
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey, // 背景色
+                                    borderRadius:
+                                        BorderRadius.circular(10.0), // 角を丸くする
+                                  ),
+                                  child: Text(
+                                    _selectedContent.text,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 18.0,
+                                      fontFamily: 'MPLUSRounded1c',
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Positioned(//the buttons for bookmark, like, and share
+              Positioned(
+                //the buttons for bookmark, like, and share
                 bottom: 16.0,
                 right: 16.0,
                 child: Column(
                   children: [
                     Transform.scale(
                       scale: 2.0,
-                      child: IconButton(// Bookmark button
+                      child: IconButton(
+                        // Bookmark button
                         icon: const Icon(Icons.bookmark),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {// TODO: Bookmark action
-                          
+                        onPressed: () {
+                          // TODO: Bookmark action
                         },
                       ),
                     ),
                     const SizedBox(height: 30),
                     Transform.scale(
                       scale: 2.0,
-                      child: IconButton(// Like button
+                      child: IconButton(
+                        // Like button
                         icon: const Icon(Icons.favorite),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {// TODO: Like action
-                          
+                        onPressed: () {
+                          // TODO: Like action
                         },
                       ),
                     ),
                     const SizedBox(height: 30),
                     Transform.scale(
                       scale: 2.0,
-                      child: IconButton(// Share button
+                      child: IconButton(
+                        // Share button
                         icon: const Icon(Icons.share),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {// TODO: Share action
-                          
+                        onPressed: () {
+                          // TODO: Share action
                         },
                       ),
                     ),
