@@ -9,70 +9,85 @@ class BookData {
   // loggerくんがこのコードからprintを駆逐するらしいです。
 
   final String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=";
-  final String searchLimit = "&maxResults=1";
+  final String searchLimit = "&maxResults=10";
   final String language = "&langRestrict=ja";
 
-  BookDataModel? bookData;
-  Future<BookDataModel?> bookSearch(String searchWord) async {
+  List<BookDataModel>? bookDatas;
+  Future<List<BookDataModel>?> bookSearch(String searchWord) async {
     final url = apiUrl + searchWord + language + searchLimit;
+    logger.d(url);
 
-    bookData = await GetBookApi().fetchData(url);
-    return bookData;
+    bookDatas = await GetBookApi().fetchData(url);
+    return bookDatas;
   }
 
-  Future<BookDataModel?> randomBookSearch() async {
+  Future<List<BookDataModel>?> randomBookSearch() async {
     String randomNumber = (Random().nextInt(10000)).toString();
     final url = ("$apiUrl%$randomNumber%$language$searchLimit&printType=books");
     logger.d(url);
 
-    bookData = await GetBookApi().fetchData(url);
-    logger.d("データ処理完了");
-    bookDataView(bookData!);
-    return bookData;
+    bookDatas = await GetBookApi().fetchData(url);
+    //bookDataView(bookDatas!);
+    return bookDatas;
   }
 
   //bookDataテスト出力用
-  bookDataView(BookDataModel bookData) {
-    logger.d(bookData.title);
-    logger.d(bookData.subtitle);
-    logger.d(bookData.authors);
-    logger.d(bookData.publishedDate);
-    logger.d(bookData.description);
-    logger.d(bookData.imageLink);
-    logger.d(bookData.infoLink);
-    logger.d(bookData.isbn10);
-    logger.d(bookData.isbn13);
+  bookDataView(List<BookDataModel> bookDatas) {
+    for (BookDataModel data in bookDatas) {
+      logger.d(data.title);
+      logger.d(data.subtitle);
+      logger.d(data.authors);
+      logger.d(data.publishedDate);
+      logger.d(data.description);
+      logger.d(data.imageLink);
+      logger.d(data.infoLink);
+      logger.d(data.isbn10);
+      logger.d(data.isbn13);
+    }
   }
 }
 
 class GetBookApi {
   var logger = Logger();
 
-  Future<BookDataModel> fetchData(String url) async {
+  Future<List<BookDataModel>> fetchData(String url) async {
     final response = await http.get(Uri.parse(url));
-    logger.d(response.body);
 
     if (response.statusCode == 200) {
       logger.d("正常なレスポンス");
       // レスポンスが成功した場合の処理
-      BookDataModel bookData =
-          BookDataModel.fromJson(jsonDecode(response.body));
-      return bookData;
+      List<BookDataModel> bookDatas =
+          createBookDatas(jsonDecode(response.body));
+      return bookDatas;
     } else {
       logger.d("異常なレスポンス");
       // レスポンスがエラーだった場合の処理
-      BookDataModel errorBook = BookDataModel(
-          id: "エラーID",
-          title: "エラーブック",
-          subtitle: "レスポンスエラー",
-          authors: ["エラーコード:${response.statusCode}"],
-          publishedDate: "エラーコード:${response.statusCode}",
-          description: "この本はAPIのレスポンスエラーによって生成されます。",
-          imageLink: "適当にエラー画像のリンクでも入れておきます？",
-          infoLink: "ここのリンクは動作させないようにしておきます？",
-          isbn10: "This book is error data.",
-          isbn13: "この本はエラーデータです。");
-      return errorBook;
+      List<BookDataModel> errorBooks = [
+        BookDataModel(
+            id: "エラーID",
+            title: "エラーブック",
+            subtitle: "レスポンスエラー",
+            authors: ["エラーコード:${response.statusCode}"],
+            publishedDate: "エラーコード:${response.statusCode}",
+            description: "この本はAPIのレスポンスエラーによって生成されます。",
+            imageLink: "適当にエラー画像のリンクでも入れておきます？",
+            infoLink: "ここのリンクは動作させないようにしておきます？",
+            isbn10: "This book is error data.",
+            isbn13: "この本はエラーデータです。")
+      ];
+      return errorBooks;
     }
+  }
+
+  List<BookDataModel> createBookDatas(Map<String, dynamic> response) {
+    List<BookDataModel> bookDatas = [];
+    var json = response['items'];
+    for (int i = 0; i < json.length; i++) {
+      bookDatas.add(BookDataModel.fromJson(json[i]));
+      logger.d("$i回目のデータ返却");
+    }
+    logger.d("処理完了");
+
+    return bookDatas;
   }
 }

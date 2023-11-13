@@ -1,5 +1,9 @@
+import 'dart:math';
+
+import 'package:logger/logger.dart';
+
 class BookDataModel {
-  final String id; //googleBooksのID
+  final String id; //googleBooksのID ★主キー
   final String title; //タイトル
   final String subtitle; //サブタイトル
   final List<String> authors; //著者
@@ -21,32 +25,44 @@ class BookDataModel {
       required this.infoLink,
       required this.isbn10,
       required this.isbn13});
-//required this.icon
+
   factory BookDataModel.fromJson(Map<String, dynamic> json) {
-    var data = json['items'][0];
+    var logger = Logger();
+    logger.d("データ処理");
 
-    String isbn10 = "";
     String isbn13 = "";
+    String isbn10 = "";
 
-    if (data['volumeInfo']['industryIdentifiers'][0]['type'] == "ISBN_10") {
-      isbn10 = data['volumeInfo']['industryIdentifiers'][0]['identifier'];
-      isbn13 = data['volumeInfo']['industryIdentifiers'][1]['identifier'];
+    /*
+    logger.d("isbn処理");
+    if (json['volumeInfo']['industryIdentifiers'][0]['type'] != null) {
+      if (json['volumeInfo']['industryIdentifiers'][0]['type'] == "ISBN_13") {
+        isbn13 = json['volumeInfo']['industryIdentifiers'][0]['identifier'];
+        if (json['volumeInfo']['industryIdentifiers'][1]['type'] != null) {
+          isbn10 = json['volumeInfo']['industryIdentifiers'][1]['identifier'];
+        }
+      }
     }
+    */
 
+    logger.d("著者処理");
     List<String> authors = [];
-    for (String name in data['volumeInfo']['authors']) {
-      authors.add(name);
+    if (json['volumeInfo']['authors'] != null) {
+      for (String name in json['volumeInfo']['authors']) {
+        authors.add(name);
+      }
     }
 
+    logger.d("残りのデータの処理");
     var model = BookDataModel(
-        id: data['id'] ?? "",
-        title: data['volumeInfo']['title'] ?? "",
-        subtitle: data['volumeInfo']['subtitle'] ?? "",
+        id: json['id'] ?? "",
+        title: json['volumeInfo']['title'] ?? "",
+        subtitle: json['volumeInfo']['subtitle'] ?? "",
         authors: authors,
-        publishedDate: data['volumeInfo']['publishedDate'] ?? "",
-        description: data['volumeInfo']['description'] ?? "",
-        imageLink: data['volumeInfo']['imageLinks']['thumbnail'] ?? "",
-        infoLink: data['volumeInfo']['previewLink'] ?? "",
+        publishedDate: json['volumeInfo']['publishedDate'] ?? "",
+        description: json['volumeInfo']['description'] ?? "",
+        imageLink: json['volumeInfo']['imageLinks']['thumbnail'] ?? "",
+        infoLink: json['volumeInfo']['previewLink'] ?? "",
         isbn10: isbn10,
         isbn13: isbn13);
 
