@@ -17,6 +17,8 @@ class BookData {
   }
 }
 
+//マージ誘発用
+
 class GetBookApi {
   final String apiUrl = "https://www.googleapis.com/books/v1/volumes?q=";
   final String searchLimit = "&maxResults=1";
