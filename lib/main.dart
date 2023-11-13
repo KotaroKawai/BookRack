@@ -49,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Demo'),
+        title: Text('Flutter Demo'),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -57,16 +57,16 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'ホーム',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.menu_book), //menu_book か import_contacts か好みによる
             label: '本棚',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'マイページ',
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,
