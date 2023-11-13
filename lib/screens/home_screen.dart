@@ -4,7 +4,7 @@ import 'dart:async';
 import '../components/api/bookData.dart';
 
 class Content {
-  final String title;
+  final String title;//著者
   final String text;
   final String? imageUrl; // Can be null for now, you might add images later
   final String? url; // Can be null for now, you might add URLs later
