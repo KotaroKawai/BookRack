@@ -1,7 +1,7 @@
-import 'package:bookrack/model/response_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
+import '../components/api/bookdata_get.dart';
 
 class Content {
   final String title; //著者
@@ -55,30 +55,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return _contentOptions[randomIndex];
   }
 
-  //late final Content _selectedContent;
   late Content _selectedContent = _contentOptions[0];
-  //Content? _selectedContent;
   Timer? _timer;
   int _currentIndex = 0;
+  double _startVerticalDrag = 0.0;
+  bool _isSwipingUp = false;
 
-  void _startRolling() {
-    _timer?.cancel();
-
-    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      setState(() {
-        _currentIndex = (_currentIndex + 1) % _contentOptions.length;
-        _selectedContent = _contentOptions[_currentIndex];
-      });
-    });
+  void _onVerticalDragStart(DragStartDetails details) {
+    _startVerticalDrag = details.globalPosition.dy;
   }
 
+  void _onVerticalDragEnd(DragEndDetails details) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final dragDistance = _startVerticalDrag - details.primaryVelocity!;
+
+    if (dragDistance < screenHeight * 0.25) {
+      _onSwipeDown();
+    }
+
+    if (dragDistance > screenHeight * 0.25) {
+      _onSwipeUp();
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _currentIndex = 0;
     _selectedContent = _contentOptions[_currentIndex];
-    _startRolling();  
   }
 
   @override
@@ -108,19 +112,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void addRandomBookToContentOptions() async {
-    List<BookDataModel>? bookDatas = await BookData().randomBookSearch();
+    var bookData = (await BookData().randomBookSearch())![0];
     // BookDataModelから必要な情報を抽出してContentオブジェクトを作成
-    for (BookDataModel bookData in bookDatas!) {
-      var newContent = Content(
-          title: bookData.title, // 本のタイトル
-          text: bookData.description, // 本の紹介文
-          imageUrl: bookData.imageLink // 画像リンク
-          );
-      // Contentオブジェクトをリストに追加
-      _contentOptions.add(newContent);
-    }
+    var newContent = Content(
+        title: bookData.title, // 本のタイトル
+        text: bookData.description, // 本の紹介文
+        imageUrl: bookData.imageLink // 画像リンク
+        );
+    // Contentオブジェクトをリストに追加
+    _contentOptions.add(newContent);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -256,12 +257,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 30),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
