@@ -27,22 +27,24 @@ class BookData {
     logger.d(url);
 
     bookDatas = await GetBookApi().fetchData(url);
-    //bookDataView(bookDatas!);
+    bookDataView(bookDatas!);
     return bookDatas;
   }
 
   //bookDataテスト出力用
   bookDataView(List<BookDataModel> bookDatas) {
     for (BookDataModel data in bookDatas) {
-      logger.d(data.title);
-      logger.d(data.subtitle);
-      logger.d(data.authors);
-      logger.d(data.publishedDate);
-      logger.d(data.description);
-      logger.d(data.imageLink);
-      logger.d(data.infoLink);
-      logger.d(data.isbn10);
-      logger.d(data.isbn13);
+      logger.d('''
+        タイトル:${data.title}
+        サブタイトル:${data.subtitle}
+        著者:${data.authors}
+        発刊データ:${data.publishedDate}
+        あらすじ・紹介:${data.description}
+        表紙リンク:${data.imageLink}
+        紹介リンク:${data.infoLink}
+        ISBN10:${data.isbn10}
+        ISBN13:${data.isbn13}
+      ''');
     }
   }
 }
@@ -84,9 +86,7 @@ class GetBookApi {
     var json = response['items'];
     for (int i = 0; i < json.length; i++) {
       bookDatas.add(BookDataModel.fromJson(json[i]));
-      logger.d("$i回目のデータ返却");
     }
-    logger.d("処理完了");
 
     return bookDatas;
   }
