@@ -126,9 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
       body: GestureDetector(
         // スワイプ検出のためのGestureDetectorを追加
         // onVerticalDragUpdate: _onVerticalDragUpdate,
