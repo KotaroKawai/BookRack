@@ -4,6 +4,7 @@ import 'screens/bookshelf_screen.dart';
 import 'screens/profile_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -60,8 +61,8 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Bookshelf',
+            icon: Icon(Icons.menu_book), //menu_book か import_contacts か好みによる
+            label: '本棚',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
