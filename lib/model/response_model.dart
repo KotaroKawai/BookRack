@@ -26,24 +26,27 @@ class BookDataModel {
 
   factory BookDataModel.fromJson(Map<String, dynamic> json) {
     var logger = Logger();
-    logger.d("データ処理");
 
-    String isbn13 = "";
     String isbn10 = "";
+    String isbn13 = "";
 
-    /*
-    logger.d("isbn処理");
-    if (json['volumeInfo']['industryIdentifiers'][0]['type'] != null) {
-      if (json['volumeInfo']['industryIdentifiers'][0]['type'] == "ISBN_13") {
-        isbn13 = json['volumeInfo']['industryIdentifiers'][0]['identifier'];
-        if (json['volumeInfo']['industryIdentifiers'][1]['type'] != null) {
-          isbn10 = json['volumeInfo']['industryIdentifiers'][1]['identifier'];
+    try {
+      for (var data in json['volumeInfo']['industryIdentifiers']) {
+        switch (data['type']) {
+          case "ISBN_10":
+            isbn10 = data['identifier'];
+            break;
+          case "ISBN_13":
+            isbn13 = data['identifier'];
+            break;
+          default:
+            break;
         }
       }
+    } catch (e) {
+      logger.d("識別コード無し");
     }
-    */
 
-    logger.d("著者処理");
     List<String> authors = [];
     if (json['volumeInfo']['authors'] != null) {
       for (String name in json['volumeInfo']['authors']) {
@@ -51,7 +54,6 @@ class BookDataModel {
       }
     }
 
-    logger.d("残りのデータの処理");
     var model = BookDataModel(
         id: json['id'] ?? "",
         title: json['volumeInfo']['title'] ?? "",
