@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'screens/home_screen.dart';
 import 'screens/bookshelf_screen.dart';
 import 'screens/profile_screen.dart';
+import 'config/config.dart';
 
+//firebase認証
+final configurations = Configurations();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: configurations.apiKey,
+      appId: configurations.appId,
+      messagingSenderId: configurations.messagingSenderId,
+      projectId: configurations.projectId
+    )
+  );
   runApp(const MyApp());
 }
 
