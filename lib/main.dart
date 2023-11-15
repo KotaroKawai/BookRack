@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'config/config.dart';
 import 'utils/authentification.dart';
+import 'package:bookrack/screens/main_Screen.dart';
 
 //firebase認証
 final configurations = Configurations();
@@ -16,21 +18,33 @@ void main() async {
       projectId: configurations.projectId
     )
   );
-  runApp(const MyApp());
+  runApp(MyApp());
+}
+
+class UserState extends ChangeNotifier {
+  User? user;
+
+  void setUser(User newUser) {
+    user = newUser;
+    notifyListeners();
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  final UserState userState = UserState();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
+    return ChangeNotifierProvider<UserState>(
+      create:(context) => UserState(),
+       child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const LoginScreen(),
+       ),
     );
   }
 }
@@ -46,18 +60,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final UserState userState = Provider.of<UserState>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Demo'),
         
       ),
-      body: Center(
-        // child: _widgetOptions.elementAt(_selectedIndex),
-        child: ElevatedButton(
-          onPressed: () {
-            signInWithGoogle();
-          },
-          child: Text('Sign in with Google'),
+      body: Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+            image: AssetImage('images/login.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: ElevatedButton(
+            onPressed: () async{
+             final user = await signInWithGoogle();
+             userState.setUser(user as User);
+             if(user != null){
+              await Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context){
+                  return MainScreen();
+                }),
+              );
+             }
+            },
+            child: Text('Sign in with Google'),
+          ),
         ),
       ),
     );

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
 import '../components/api/bookdata_get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Content {
   final String title; //著者
@@ -226,8 +230,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: const Icon(Icons.bookmark),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {
+                        onPressed: () async{
                           // TODO: Bookmark action
+                          await FirebaseFirestore.instance.collection('posts').doc().set({
+                            'bookmark':true,
+                            });
                         },
                       ),
                     ),
@@ -239,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: const Icon(Icons.favorite),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {
+                        onPressed: () async {
                           // TODO: Like action
                         },
                       ),
