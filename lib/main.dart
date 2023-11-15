@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';  
 import 'config/config.dart';
 import 'utils/auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 
 //firebaseの認証
@@ -13,11 +15,15 @@ void main() async{
       apiKey: configurations.apiKey,
       appId: configurations.appId,
       messagingSenderId: configurations.messagingSenderId,
-      projectId: configurations.projectId
-    )
+      projectId: configurations.projectId,
+    ),
   );
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   @override

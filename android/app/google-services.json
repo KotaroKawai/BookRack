@@ -1,42 +1,77 @@
 {
   "project_info": {
-    "project_number": "688526243352",
-    "project_id": "mybookshelf-890c5",
-    "storage_bucket": "mybookshelf-890c5.appspot.com"
+    "project_number": "407594844473",
+    "project_id": "bookshelf-f4247",
+    "storage_bucket": "bookshelf-f4247.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:688526243352:android:0a198fd5c97cd17dd4356d",
+        "mobilesdk_app_id": "1:407594844473:android:ff2937c6b5f09b6a68e8e8",
         "android_client_info": {
-          "package_name": "com.MyBookShelf"
+          "package_name": "bookshelf.test01"
         }
       },
       "oauth_client": [
         {
-          "client_id": "688526243352-5rlncmteh36p0aqb4kctvk88roua7jb3.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.MyBookShelf",
-            "certificate_hash": "6c5634e5b7cfda4fb247c4707f7c72ec40d23b89"
-          }
-        },
-        {
-          "client_id": "688526243352-cg3nmmj68al958u8p7hohacmsj8sggj9.apps.googleusercontent.com",
+          "client_id": "407594844473-j121ltglitnrcok99trv9m4n0ai66tku.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCNe5I2T92odZidbVpBdRHBI4K4_ob0Kcw"
+          "current_key": "AIzaSyDKdTeoV69QThvheCjNGNA94DuNvO6UISQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "688526243352-cg3nmmj68al958u8p7hohacmsj8sggj9.apps.googleusercontent.com",
+              "client_id": "407594844473-j121ltglitnrcok99trv9m4n0ai66tku.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "407594844473-3ap7jcsgabhr85rs98bcmdcca2f5ik1n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bookrack.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407594844473:android:accf3bd37ce81f1268e8e8",
+        "android_client_info": {
+          "package_name": "com.example.bookrack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407594844473-j121ltglitnrcok99trv9m4n0ai66tku.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKdTeoV69QThvheCjNGNA94DuNvO6UISQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407594844473-j121ltglitnrcok99trv9m4n0ai66tku.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "407594844473-3ap7jcsgabhr85rs98bcmdcca2f5ik1n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bookrack.RunnerTests"
+              }
             }
           ]
         }
