@@ -1,7 +1,13 @@
+import 'package:bookrack/main.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:math';
 import 'dart:async';
 import '../components/api/bookdata_get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Content {
   final String title; //著者
@@ -125,6 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final UserState userState = Provider.of<UserState>(context);
+    final User user = userState.user!;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text(widget.title),
@@ -226,8 +234,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: const Icon(Icons.bookmark),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {
+                        onPressed: () async{
                           // TODO: Bookmark action
+                          await FirebaseFirestore.instance.collection('posts').doc(user.uid).set({
+                            'title':'SOFTSKILLS',
+                            });
                         },
                       ),
                     ),
@@ -239,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: const Icon(Icons.favorite),
                         //color: Colors.black,
                         color: Colors.black.withOpacity(0.7),
-                        onPressed: () {
+                        onPressed: () async {
                           // TODO: Like action
                         },
                       ),

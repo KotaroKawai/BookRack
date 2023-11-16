@@ -1,5 +1,8 @@
 // screens/home_screen.dart
+import 'package:bookrack/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String title;
@@ -8,6 +11,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserState userState = Provider.of<UserState>(context);
+    final User user = userState.user!;
     // Your ProfileScreen layout goes here
     return Scaffold(
       body: Center(
