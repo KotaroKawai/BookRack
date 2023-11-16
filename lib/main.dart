@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'config/config.dart';
 import 'utils/authentification.dart';
-import 'package:bookrack/screens/main_Screen.dart';
+import 'package:bookrack/screens/main_screen.dart';
 
 //firebase認証
 final configurations = Configurations();
