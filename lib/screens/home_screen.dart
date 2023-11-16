@@ -10,12 +10,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class Content {
-  final String title; //著者
+  final String id; //ID
+  final String title; //タイトル
   final String text; //あらすじ
-  final String? imageUrl; // Can be null for now, you might add images later
-  final String? url; // Can be null for now, you might add URLs later
+  final String? imageUrl; // 表紙の画像
+  final String? url; // アマゾン等の販売先リンクの予定
 
-  Content({required this.title, required this.text, this.imageUrl, this.url});
+  Content({required this.id,required this.title, required this.text, this.imageUrl, this.url});
 }
 
 class HomeScreen extends StatefulWidget {
@@ -28,34 +29,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Create a list of Content objects
+  //　最初の一つを仮置き中
   final List<Content> _contentOptions = [
     Content(
+        id: 'tteesstt01',
         title: 'Title 1',
         text: 'あいうえお string.\n\nIt has multiple paragraphs for demonstration.',
         imageUrl: 'https://picsum.photos/id/1/400/300'),
-    Content(
-        title: 'Title 2',
-        text:
-            'かきくhe second option.\n\nIt also has several paragraphs to illustrate the point.',
-        imageUrl: 'https://picsum.photos/id/2/400/300'),
-    Content(
-        title: 'Title 3',
-        text: 'さしすせそlooks like this.\n\nParagraphs are split for readability.',
-        imageUrl: 'https://picsum.photos/id/3/400/300'),
-    Content(
-        title: 'Title 4',
-        text:
-            'たちつてと number four comes here.\n\nAgain, notice the paragraph separation.',
-        imageUrl: 'https://picsum.photos/id/4/400/300'),
-    Content(
-        title: 'Title 5',
-        text:
-            'はひふへほxt string is presented here.\n\nThis concludes the set of examples.',
-        imageUrl: 'https://picsum.photos/id/5/400/300'),
   ];
 
-  // Randomly select a Content object
+  // 次の本をランダムに呼び出し
   Content getRandomContent() {
     final randomIndex = Random().nextInt(_contentOptions.length);
     return _contentOptions[randomIndex];
@@ -104,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _currentIndex == 0 ? _contentOptions.length - 1 : _currentIndex - 1;
       _selectedContent = _contentOptions[_currentIndex];
     });
+    addToHistoryToFirebase();
   }
 
   void _onSwipeDown() {
@@ -115,17 +99,85 @@ class _HomeScreenState extends State<HomeScreen> {
       addRandomBookToContentOptions();
       //_contentOptions.add(Content(title: '新しいタイトル', text: '新しいテキスト', imageUrl: 'https://picsum.photos/id/6/400/300'));
     });
+    addToHistoryToFirebase();
+  }
+
+  void addToHistoryToFirebase() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null && _selectedContent.imageUrl != null) {
+      await addToHistory(user.uid, _selectedContent.id, _selectedContent.imageUrl!);
+    }
+  }
+  
+  Future<void> addToHistory(String userId, String bookId, String bookImageUrl) async {
+    final DocumentReference docRef = FirebaseFirestore.instance.collection('test').doc(userId);
+
+    return FirebaseFirestore.instance.runTransaction<void>((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(docRef);
+
+      if (!snapshot.exists) {
+        // ドキュメントが存在しない場合、新しいドキュメントを作成して履歴を初期化
+        transaction.set(docRef, {
+          'history': [
+            {'bookId': bookId, 'bookImageUrl': bookImageUrl}
+          ],
+          'historyCount': 1
+        });
+      } else {
+        // ドキュメントが存在する場合、履歴に新しい本のペアを追加
+        transaction.update(docRef, {
+          'history': FieldValue.arrayUnion([
+            {'bookId': bookId, 'bookImageUrl': bookImageUrl}
+          ]),
+          'historyCount': FieldValue.increment(1)
+        });
+      }
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  Future<void> addToBookmark(String userId, String bookId, String bookImageUrl) async {
+    final DocumentReference docRef = FirebaseFirestore.instance.collection('test').doc(userId);
+
+    return FirebaseFirestore.instance.runTransaction<void>((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(docRef);
+      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+      // ドキュメントが存在するかどうか、および特定のフィールドが存在するかどうかをチェック
+      int currentCount = data != null && data.containsKey('bookmarkCount') 
+                        ? data['bookmarkCount'] as int 
+                        : 0;
+
+      if (!snapshot.exists || data == null || !data.containsKey('bookmark')) {
+        // 新しいドキュメントを作成するか、またはbookmarkフィールドが存在しない場合
+        transaction.set(docRef, {
+          'bookmark': [{'bookId': bookId, 'bookImageUrl': bookImageUrl}],
+          'bookmarkOrder': [{'bookId': bookId, 'order': currentCount + 1}],
+          'bookmarkCount': currentCount + 1,
+        }, SetOptions(merge: true));
+      } else {
+        // ドキュメントが存在し、bookmarkフィールドも存在する場合、配列とカウントを更新
+        transaction.update(docRef, {
+          'bookmark': FieldValue.arrayUnion([{'bookId': bookId, 'bookImageUrl': bookImageUrl}]),
+          'bookmarkOrder': FieldValue.arrayUnion([{'bookId': bookId, 'order': currentCount + 1}]),
+          'bookmarkCount': FieldValue.increment(1)
+        });
+      }
+    }).catchError((e) {
+      print(e);
+    });
   }
 
   void addRandomBookToContentOptions() async {
     var bookData = (await BookData().randomBookSearch())![0];
-    // BookDataModelから必要な情報を抽出してContentオブジェクトを作成
+
     var newContent = Content(
-        title: bookData.title, // 本のタイトル
-        text: bookData.description, // 本の紹介文
-        imageUrl: bookData.imageLink // 画像リンク
+        id: bookData.id,              //本のID
+        title: bookData.title,        // 本のタイトル
+        text: bookData.description,   // 本の紹介文
+        imageUrl: bookData.imageLink  // 画像リンク
         );
-    // Contentオブジェクトをリストに追加
     _contentOptions.add(newContent);
   }
 
@@ -134,20 +186,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final UserState userState = Provider.of<UserState>(context);
     final User user = userState.user!;
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(widget.title),
-      // ),
       body: GestureDetector(
         // スワイプ検出のためのGestureDetectorを追加
-        // onVerticalDragUpdate: _onVerticalDragUpdate,
         onVerticalDragStart: _onVerticalDragStart,
         onVerticalDragEnd: _onVerticalDragEnd,
         child: AnimatedSwitcher(
           duration:
               const Duration(seconds: 1), // Set a duration for the transition
           transitionBuilder: (Widget child, Animation<double> animation) {
-            // final inAnimation = Tween<Offset>(begin: Offset(0, -1), end: Offset(0, 0)).animate(animation);
-            // final outAnimation = Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0)).animate(animation);
             final inAnimation = Tween<Offset>(
                     begin: Offset(0, _isSwipingUp ? 1 : -1), end: Offset.zero)
                 .animate(animation);
@@ -236,9 +282,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.black.withOpacity(0.7),
                         onPressed: () async{
                           // TODO: Bookmark action
-                          await FirebaseFirestore.instance.collection('posts').doc(user.uid).set({
-                            'title':'SOFTSKILLS',
-                            });
+                          User? user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            await addToBookmark(user.uid, _selectedContent.id, _selectedContent.imageUrl! );
+                          }
                         },
                       ),
                     ),

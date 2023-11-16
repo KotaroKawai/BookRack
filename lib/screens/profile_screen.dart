@@ -2,22 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:bookrack/main.dart'; // ここに必要な他のページへの遷移機能があると仮定します
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final String title;
-
   const ProfileScreen({super.key, required this.title});
+  
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  int historyCount = 0;
+  late DocumentReference docRef;
+
+  @override
+  void initState() {
+    super.initState();
+
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      docRef = FirebaseFirestore.instance.collection('test').doc(user.uid);
+      fetchhistoryCount();
+    }
+  }
+
+  void fetchhistoryCount() async {
+      try {
+        DocumentSnapshot snapshot = await docRef.get();
+        if (snapshot.exists) {
+          setState(() {
+            historyCount = snapshot.get('historyCount') as int;
+          });
+        }
+      } catch (e) {
+        print('Error getting document: $e');
+      }
+  }
 
   @override
   Widget build(BuildContext context) {
     final UserState userState = Provider.of<UserState>(context);
-    final User user = userState.user!;
-
+    User? user = FirebaseAuth.instance.currentUser;
+  
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("images/login.jpg"), // アセットから画像を読み込む
+            image: const AssetImage("images/login.jpg"), // アセットから画像を読み込む
             fit: BoxFit.cover, // 画像を画面に合わせて調整
             colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.5), // 透明度を調整
@@ -45,11 +78,11 @@ class ProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              '${user.displayName ?? '未設定'}',
+                              user?.displayName ?? '未設定',
                               style: const TextStyle(fontSize: 20)
                             ),
                             Text(
-                              '${user.email ?? '未設定'}',
+                              user?.email ?? '未設定',
                               style: const TextStyle(fontSize: 12)
                             ),
                           ],
@@ -72,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
 
                     child: Text(
-                      '閲覧数: [表示数]',
+                      '閲覧数: $historyCount',
                       style: const TextStyle(fontSize: 20),
                     ),
                   ),
@@ -86,10 +119,14 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 120),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // サインアウト処理
                     FirebaseAuth.instance.signOut();
                     // ログインページなどに戻る処理をここに追加
+                    await Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => MyApp()),
+                      (Route<dynamic> route) => false, // 以前のすべてのルートを削除
+                    );
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('サインアウト'),
