@@ -32,10 +32,6 @@ class _MainScreenState extends State<MainScreen> {
     final UserState userState = Provider.of<UserState>(context);
     final User user = userState.user!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Demo'),
-        
-      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

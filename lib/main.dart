@@ -39,7 +39,6 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider<UserState>(
       create:(context) => UserState(),
        child: MaterialApp(
-        title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
@@ -63,10 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final UserState userState = Provider.of<UserState>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Demo'),
-        
-      ),
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
