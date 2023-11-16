@@ -1,4 +1,6 @@
+import 'package:bookrack/main.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:math';
 import 'dart:async';
 import '../components/api/bookdata_get.dart';
@@ -129,6 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final UserState userState = Provider.of<UserState>(context);
+    final User user = userState.user!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -232,8 +236,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.black.withOpacity(0.7),
                         onPressed: () async{
                           // TODO: Bookmark action
-                          await FirebaseFirestore.instance.collection('posts').doc().set({
-                            'bookmark':true,
+                          await FirebaseFirestore.instance.collection('posts').doc(user.uid).set({
+                            'title':'SOFTSKILLS',
                             });
                         },
                       ),

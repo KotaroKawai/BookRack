@@ -21,6 +21,7 @@ void main() async {
   runApp(MyApp());
 }
 
+//Userのログイン状態を管理
 class UserState extends ChangeNotifier {
   User? user;
 
@@ -69,11 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
-            image: AssetImage('images/login.jpg'),
+              image: AssetImage('images/login.jpg'),
             fit: BoxFit.cover,
           ),
         ),
         child: Center(
+          //ログインボタン
           child: ElevatedButton(
             onPressed: () async{
              final user = await signInWithGoogle();
