@@ -54,6 +54,11 @@ class BookDataModel {
       }
     }
 
+    String imageLink = "";
+    if (json['volumeInfo']['imageLinks'] != null) {
+      imageLink = json['volumeInfo']['imageLinks']['thumbnail'] ?? "";
+    }
+
     var model = BookDataModel(
         id: json['id'] ?? "",
         title: json['volumeInfo']['title'] ?? "",
@@ -61,7 +66,7 @@ class BookDataModel {
         authors: authors,
         publishedDate: json['volumeInfo']['publishedDate'] ?? "",
         description: json['volumeInfo']['description'] ?? "",
-        imageLink: json['volumeInfo']['imageLinks']['thumbnail'] ?? "",
+        imageLink: imageLink,
         infoLink: json['volumeInfo']['previewLink'] ?? "",
         isbn10: isbn10,
         isbn13: isbn13);
