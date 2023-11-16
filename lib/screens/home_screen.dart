@@ -134,9 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final UserState userState = Provider.of<UserState>(context);
     final User user = userState.user!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
       body: GestureDetector(
         // スワイプ検出のためのGestureDetectorを追加
         // onVerticalDragUpdate: _onVerticalDragUpdate,
