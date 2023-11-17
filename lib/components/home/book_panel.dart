@@ -15,10 +15,8 @@ class BookPanel extends StatelessWidget {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(content.imageUrl!),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.1), BlendMode.darken
-              )
+            filterQuality: FilterQuality.high,
+            fit: BoxFit.contain,
             ),
         ),
         child: Container(
@@ -35,32 +33,6 @@ class BookPanel extends StatelessWidget {
           child: Stack(
             children: [
               Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: FractionallySizedBox(
-                    heightFactor: .6,
-                    widthFactor: .9,
-                    child: Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: RichText(
-                          text: TextSpan(
-                            text: content.text,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              backgroundColor: Colors.white,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ),
-              Align(
                 alignment: Alignment.bottomLeft,
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -68,7 +40,8 @@ class BookPanel extends StatelessWidget {
                       widthFactor: .8,
                       child: BookPanelContent(
                         title: content.title, 
-                        authors: content.authors, 
+                        authors: content.authors,
+                        text: content.text,
                       ),
                     ),
                   )

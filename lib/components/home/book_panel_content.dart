@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
 
-class BookPanelContent extends StatelessWidget {
+class BookPanelContent extends StatefulWidget {
   final String title;
   final String authors;
+  final String text;
 
-  const BookPanelContent({Key? key, required this.title, required this.authors}) : super(key: key);
+  const BookPanelContent({Key? key, required this.title, required this.authors, required this.text}) : super(key: key);
 
+  @override
+  State<BookPanelContent> createState() => _BookPanelContentState();
+}
+
+class _BookPanelContentState extends State<BookPanelContent> {
+  late bool isExpanded;
+
+  @override
+  void initState() {
+    super.initState();
+    isExpanded = false;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        
         Text(
-          title,
+          widget.title,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -26,7 +41,7 @@ class BookPanelContent extends StatelessWidget {
         RichText(text: TextSpan(
           children: [
             TextSpan(
-              text: authors,
+              text: widget.authors,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -34,8 +49,27 @@ class BookPanelContent extends StatelessWidget {
               ),
             ),
           ]
-        )
+        ),
       ),
+      GestureDetector(
+        onTap: () {
+          setState(() {
+            isExpanded = !isExpanded;
+          });
+        },
+        child: RichText(
+          overflow: TextOverflow.ellipsis,
+          maxLines: isExpanded ? 20 : 3,
+          text: TextSpan(
+              text: widget.text,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.normal,
+                color: Colors.white,
+              )
+            )
+          ),
+      )
       ],
     );
   }
