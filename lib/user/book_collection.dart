@@ -5,7 +5,7 @@ class BookCollection {
   final _db = FirebaseFirestore.instance;
   final String uid;
   late final String collectionName;
-  late final books = _db.collection('users').doc(uid).collection(collectionName); 
+  late final _books = _db.collection('users').doc(uid).collection(collectionName); 
 
   BookCollection(
     {
@@ -16,7 +16,7 @@ class BookCollection {
 
   /// 小レクソンの本を削除する
   Future<void> removeBook(String id) async {
-    return books.doc(id).delete();
+    return _books.doc(id).delete();
   }
 
   /// コレクションに本を追加する
@@ -25,7 +25,7 @@ class BookCollection {
       throw Exception('idは空です');
     }
 
-    return books.doc(data.id).set({
+    return _books.doc(data.id).set({
       'title': data.title,
       'authors': data.authors,
       'imageUrl': data.imageUrl,
@@ -34,12 +34,16 @@ class BookCollection {
 
   /// コレクションから本を取得する
   Future<List<FirestoreBook>> getBooks(int limit) async {
-    return books.limit(limit).get() as Future<List<FirestoreBook>>;
+    return _books.limit(limit).get() as Future<List<FirestoreBook>>;
   }
 
   /// コレクションに本が含まれているかどうかを返す
   Future<bool> contains(String id) async {
-    final doc = await books.doc(id).get();
+    final doc = await _books.doc(id).get();
     return doc.exists;
+  }
+
+  Future<int> count() async {
+    return _books.count().get() as Future<int>;
   }
 }

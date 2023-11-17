@@ -16,5 +16,13 @@ class FirestoreUser {
 
   FirestoreUser({required this.uid});
 
-  
+  Future<bool> exists() async {
+    final doc = await db.collection('users').doc(uid).get();
+    
+    return doc.exists;
+  }
+
+  Future<void> delete() async {
+    await db.collection('users').doc(uid).delete();
+  }
 }
