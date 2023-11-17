@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookshelfScreen extends StatefulWidget {
   final String title;
-  //final List<String> bookCoverUrls; // 本の表紙のURLのリスト
   const BookshelfScreen({Key? key, required this.title}) : super(key: key);
 
   @override
@@ -24,9 +23,6 @@ class BookshelfScreenState extends State<BookshelfScreen> {
   @override
   void initState() {
     super.initState();
-    // bookIds = List.generate(widget.bookCoverUrls.length, (index) => index);
-    // //bookOrder = List.from(bookIds);
-    // bookOrder = List.generate(widget.bookCoverUrls.length, (index) => index);
     bookOrder = [];
     fetchBookmarks();
   }
@@ -50,19 +46,40 @@ class BookshelfScreenState extends State<BookshelfScreen> {
 
   // 表示順を更新する関数
   void reorderData(int oldIndex, int newIndex) {
+    if (oldIndex == newIndex) return;
+
     setState(() {
-      if (newIndex > oldIndex) {
+      var item = bookmarks.removeAt(oldIndex);
+      if (oldIndex < newIndex) {
+        // oldIndexよりも前に要素を削除すると、newIndexは1つ減ることを考慮
         newIndex -= 1;
       }
-      final int item = bookOrder.removeAt(oldIndex);
-      bookOrder.insert(newIndex, item);
+      bookmarks.insert(newIndex, item);
     });
+
+    updateBookmarkOrderInFirestore();
   }
+
+  // Firestoreのドキュメントを更新
+  void updateBookmarkOrderInFirestore() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('test').doc(user.uid).update({
+        'bookmark': bookmarks.map((bookmark) => {
+          'bookId': bookmark['bookId'],
+          'bookImageUrl': bookmark['bookImageUrl']
+        }).toList()
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     // Your BookshelfScreen layout goes here
     final UserState userState = Provider.of<UserState>(context);
+    double offsetValue = MediaQuery.of(context).size.width / 3 * 0.5;     
+
     final User user = userState.user!;
     return Scaffold(
       body: Container(
@@ -76,6 +93,10 @@ class BookshelfScreenState extends State<BookshelfScreen> {
           ),
           ),
         ),
+        child: Column(
+      children: <Widget>[
+        SizedBox(height: offsetValue), // ここで必要な高さの空白を追加
+        Expanded(
         child: GridView.builder(
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 100),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -88,18 +109,10 @@ class BookshelfScreenState extends State<BookshelfScreen> {
           // GridView.builderのitemCountをbookmarksの長さにする
           itemCount: bookmarks.length,
           itemBuilder: (context, index) {
-            double offsetValue = MediaQuery.of(context).size.width / 3 * 0.5;     
-             int bookId = bookOrder[index];
-            var book = bookmarks[index];
+            int bookId = bookOrder[index];
             List<String> urls = bookmarks.map((b) => b['bookImageUrl'] as String).toList();
-            // bookmarkOrder 配列から order 値を取得し、インデックスに変換
-            //int order = data['bookmarkOrder'][index]['order'] as int;
-            //int displayIndex = order - 1; // order は 1 から始まるため、1 を引く
-
+            
             return DragTarget<int>(
-              // onWillAccept: (receivedBookId) {
-              //   return receivedBookId != bookId; // 同じ位置にはドロップ不可
-              // },
               onAccept: (receivedBookId) {
                 int oldIndex = bookOrder.indexOf(receivedBookId);
                 int newIndex = bookOrder.indexOf(bookId);
@@ -112,23 +125,16 @@ class BookshelfScreenState extends State<BookshelfScreen> {
                   onDragCompleted: () {},
 
                   feedback: Material(
-                    //elevation: 4.0,
                     color: Colors.transparent,
-                    child: Transform.translate(
-                      offset: Offset(0, offsetValue),
-                      //child: createBookItem(context, widget.bookCoverUrls, bookOrder[index], isDragging: true),
                       child: createBookItem(context, urls, bookOrder[index], isDragging: true),
-                    ),
                   ),
-                  child: Transform.translate(
-                    offset: Offset(0, offsetValue), 
                     child: createBookItem(context, urls, bookOrder[index]), // 本のアイテムを生成するメソッド
-                  ),
                 );
               },
             );
           },
         ),
+        ),],),
       ),
     );
   }

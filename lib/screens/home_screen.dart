@@ -153,14 +153,14 @@ class _HomeScreenState extends State<HomeScreen> {
         // 新しいドキュメントを作成するか、またはbookmarkフィールドが存在しない場合
         transaction.set(docRef, {
           'bookmark': [{'bookId': bookId, 'bookImageUrl': bookImageUrl}],
-          'bookmarkOrder': [{'bookId': bookId, 'order': currentCount + 1}],
+          // 'bookmarkOrder': [{'bookId': bookId, 'order': currentCount + 1}],
           'bookmarkCount': currentCount + 1,
         }, SetOptions(merge: true));
       } else {
         // ドキュメントが存在し、bookmarkフィールドも存在する場合、配列とカウントを更新
         transaction.update(docRef, {
           'bookmark': FieldValue.arrayUnion([{'bookId': bookId, 'bookImageUrl': bookImageUrl}]),
-          'bookmarkOrder': FieldValue.arrayUnion([{'bookId': bookId, 'order': currentCount + 1}]),
+          // 'bookmarkOrder': FieldValue.arrayUnion([{'bookId': bookId, 'order': currentCount + 1}]),
           'bookmarkCount': FieldValue.increment(1)
         });
       }
