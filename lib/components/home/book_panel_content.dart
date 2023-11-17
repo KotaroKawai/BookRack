@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 class BookPanelContent extends StatelessWidget {
   final String title;
   final String authors;
-  final String description;
 
-  const BookPanelContent({Key? key, required this.title, required this.authors, required this.description}) : super(key: key);
+  const BookPanelContent({Key? key, required this.title, required this.authors}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +36,6 @@ class BookPanelContent extends StatelessWidget {
           ]
         )
       ),
-      RichText(text: TextSpan(
-        text: description,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-          color: Colors.white
-        )
-      ))
       ],
     );
   }

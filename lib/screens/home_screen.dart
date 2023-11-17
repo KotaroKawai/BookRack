@@ -3,19 +3,7 @@ import 'package:bookrack/components/home/book_panel_props.dart';
 import 'package:bookrack/model/response_model.dart';
 import 'package:flutter/material.dart';
 import '../components/api/bookdata_get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-class Content {
-  final String title; //著者
-  final String text; //あらすじ
-  final String? imageUrl; // Can be null for now, you might add images later
-  final String? url; // Can be null for now, you might add URLs later
-
-  Content({required this.title, required this.text, this.imageUrl, this.url});
-}
 
 class HomeScreen extends StatefulWidget {
   final String title;

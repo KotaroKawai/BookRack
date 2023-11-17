@@ -1,7 +1,6 @@
 import 'package:bookrack/components/home/book_panel_button.dart';
 import 'package:bookrack/components/home/book_panel_content.dart';
 import 'package:bookrack/components/home/book_panel_props.dart';
-import 'package:bookrack/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class BookPanel extends StatelessWidget {
@@ -36,26 +35,43 @@ class BookPanel extends StatelessWidget {
           child: Stack(
             children: [
               Align(
-                alignment: Alignment.bottomLeft,
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: FractionallySizedBox(
-                    heightFactor: .4,
+                    heightFactor: .6,
+                    widthFactor: .9,
                     child: Expanded(
                       child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: FractionallySizedBox(
-                            widthFactor: .9,
-                            alignment: const Alignment(-1, -1),
-                            child: BookPanelContent(
-                              title: content.title, 
-                              authors: content.authors, 
-                              description: content.text
+                        scrollDirection: Axis.vertical,
+                        child: RichText(
+                          text: TextSpan(
+                            text: content.text,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              backgroundColor: Colors.white,
+                              color: Colors.black,
                             ),
-                          )
+                          ),
                         ),
-                      )
+                      ),
                     ),
-                ),
+                  ),
+                )
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: FractionallySizedBox(
+                      widthFactor: .8,
+                      child: BookPanelContent(
+                        title: content.title, 
+                        authors: content.authors, 
+                      ),
+                    ),
+                  )
               ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -64,7 +80,7 @@ class BookPanel extends StatelessWidget {
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      BookPanelButton(icon: Icons.favorite, number: "1.2m", color: Colors.red),
+                      BookPanelButton(icon: Icons.favorite_outline_sharp, number: "1.2m", color: Colors.white),
                       BookPanelButton(icon: Icons.bookmark_outline, number: "1.2m", color: Colors.white),
                       BookPanelButton(icon: Icons.share, number: "1.2m", color: Colors.white,),
                     ],
