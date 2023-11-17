@@ -29,45 +29,74 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _controller = PageController(initialPage: 0);
   final _apiService = BookData();
+  late final List<BookDataModel> _books;
 
-  // TODO: キャッシュと下にスクロールしたら、またAPIを叩く
+  void _getBooks() async {
+    final result = await _apiService.randomBookSearch() ?? [];
+
+    setState(() {
+      _books.addAll(result);
+    });
+  }
+  
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
+    _books = [];
+
+    _controller.addListener(() {
+      if (_controller.position.maxScrollExtent == _controller.offset) {
+        _getBooks();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _apiService.randomBookSearch(), 
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          final books = snapshot.data as List<BookDataModel?>;
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() {
+          _books.clear();
+          _getBooks();
+        });
+      },
+      child: PageView.builder(
+        itemCount: _books.isNotEmpty ? _books.length : 1,
+        itemBuilder: (context, snapshot) {
+          if (_books.isEmpty) {
+            _getBooks();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
           return Scaffold(
-            body: PageView(
+            body: PageView.builder(
               controller: _controller,
               scrollDirection: Axis.vertical,
-              children: [
-                for (final bookData in books)
-                  BookPanel(
+              itemCount: _books.length ,
+              itemBuilder: (context, index) {
+                final bookData = _books[index];
+  
+                return BookPanel(
                     content: BookPanelProps(
                       title: bookData?.title ?? 'Fuck',
                       text: bookData?.description ?? 'oh no', 
                       authors: bookData?.authors.join(', ') ?? 'lmao', 
                       imageUrl: bookData?.imageLink ?? "https://kinsta.com/wp-content/uploads/2018/08/google-404-error-page-1.png",
-                    ),
-                  ),
-              ]
+                    )
+                  );
+              },
               )
             );
-        } else if (snapshot.hasError) {
-          return Text("${snapshot.error}", style: const TextStyle(color: Colors.red));
         }
-
-        return const Center(child: CircularProgressIndicator());
-      }
+      ),
     );
   }
 }
