@@ -1,10 +1,10 @@
-class LikedBook {
+class FirestoreBook {
   final String title;
   final String authors;
   final String imageUrl;
   final String id;
 
-  LikedBook({
+  FirestoreBook({
     required this.title,
     required this.authors,
     required this.imageUrl,
