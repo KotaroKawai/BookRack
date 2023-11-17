@@ -46,4 +46,14 @@ class BookCollection {
   Future<int> count() async {
     return _books.count().get() as Future<int>;
   }
+
+  Future<bool> toggleBook(FirestoreBook data) async {
+    if (await contains(data.id)) {
+      await removeBook(data.id);
+      return false;
+    }
+    
+    await addBook(data);
+    return true;
+  }
 }

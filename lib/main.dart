@@ -34,6 +34,8 @@ class UserState extends ChangeNotifier {
 class MyApp extends StatelessWidget {
   final UserState userState = UserState();
 
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<UserState>(
@@ -75,15 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: () async{
              final user = await signInWithGoogle();
              userState.setUser(user as User);
-             if(user != null){
-              await Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context){
-                  return MainScreen();
-                }),
-              );
-             }
-            },
-            child: Text('Sign in with Google'),
+            await Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context){
+                return const MainScreen();
+              }),
+            );
+                       },
+            child: const Text('Sign in with Google'),
           ),
         ),
       ),
