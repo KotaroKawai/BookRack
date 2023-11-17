@@ -26,7 +26,6 @@ class _BookPanelContentState extends State<BookPanelContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        
         Text(
           widget.title,
           style: const TextStyle(

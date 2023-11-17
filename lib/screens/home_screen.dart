@@ -74,10 +74,11 @@ class _HomeScreenState extends State<HomeScreen> {
   
                 return BookPanel(
                     content: BookPanelProps(
-                      title: bookData?.title ?? 'Fuck',
-                      text: bookData?.description ?? 'oh no', 
-                      authors: bookData?.authors.join(', ') ?? 'lmao', 
-                      imageUrl: bookData?.imageLink ?? "https://kinsta.com/wp-content/uploads/2018/08/google-404-error-page-1.png",
+                      id: bookData.id,
+                      title: bookData.title,
+                      text: bookData.description, 
+                      authors: bookData.authors.join(', '), 
+                      imageUrl: bookData.imageLink,
                     )
                   );
               },
