@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/home_screen.dart';
-import 'screens/bookshelf_screen.dart';
-import 'screens/profile_screen.dart';
+import 'package:provider/provider.dart';
 import 'config/config.dart';
+import 'utils/authentification.dart';
+import 'package:bookrack/screens/main_screen.dart';
 
 //firebase認証
 final configurations = Configurations();
@@ -18,73 +18,74 @@ void main() async {
       projectId: configurations.projectId
     )
   );
-  runApp(const MyApp());
+  runApp(MyApp());
+}
+
+//Userのログイン状態を管理
+class UserState extends ChangeNotifier {
+  User? user;
+
+  void setUser(User newUser) {
+    user = newUser;
+    notifyListeners();
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  final UserState userState = UserState();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MainScreen(),
+    return ChangeNotifierProvider<UserState>(
+      create:(context) => UserState(),
+       child: MaterialApp(
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const LoginScreen(),
+       ),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-  final List<Widget> _widgetOptions = [
-    const HomeScreen(title: 'Home Page'),
-    const BookshelfScreen(title: 'Bookshelf'),
-    const ProfileScreen(title: 'Profile Page'),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final UserState userState = Provider.of<UserState>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Demo'),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      body: Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/login.jpg'),
+            fit: BoxFit.cover,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book), //menu_book か import_contacts か好みによる
-            label: '本棚',
+        ),
+        child: Center(
+          //ログインボタン
+          child: ElevatedButton(
+            onPressed: () async{
+             final user = await signInWithGoogle();
+             userState.setUser(user as User);
+             if(user != null){
+              await Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context){
+                  return MainScreen();
+                }),
+              );
+             }
+            },
+            child: Text('Sign in with Google'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.deepPurple[800],
-        onTap: _onItemTapped,
+        ),
       ),
     );
   }

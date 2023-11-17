@@ -3,6 +3,10 @@ import 'package:bookrack/components/home/book_panel_props.dart';
 import 'package:bookrack/model/response_model.dart';
 import 'package:flutter/material.dart';
 import '../components/api/bookdata_get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Content {
   final String title; //著者
