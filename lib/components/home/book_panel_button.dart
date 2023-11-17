@@ -6,7 +6,7 @@ class BookPanelButton extends StatelessWidget {
   final Color color;
   final void Function()? onTap;
 
-  const BookPanelButton({Key? key, required this.icon, required this.number, required this.color, this.onTap}) : super(key: key);
+  const BookPanelButton({super.key, required this.icon, required this.number, required this.color, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class BookPanelButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Icon(icon, size: 40, color: color,),
-              Text(number, style: TextStyle(color: Colors.white))
+              Text(number, style: const TextStyle(color: Colors.white))
             ]),
         ),
     );

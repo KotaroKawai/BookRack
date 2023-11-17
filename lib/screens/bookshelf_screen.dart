@@ -3,13 +3,12 @@ import 'package:bookrack/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookshelfScreen extends StatefulWidget {
   final String title;
   //final List<String> bookCoverUrls; // 本の表紙のURLのリスト
-  const BookshelfScreen({Key? key, required this.title}) : super(key: key);
+  const BookshelfScreen({super.key, required this.title});
 
   @override
   BookshelfScreenState createState() => BookshelfScreenState();

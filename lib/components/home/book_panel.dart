@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class BookPanel extends StatefulWidget {
   final BookPanelProps content;
 
-  const BookPanel({Key? key, required this.content}) : super(key: key);
+  const BookPanel({super.key, required this.content});
 
   @override
   State<BookPanel> createState() => _BookPanelState();

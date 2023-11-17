@@ -5,7 +5,7 @@ class BookPanelContent extends StatefulWidget {
   final String authors;
   final String text;
 
-  const BookPanelContent({Key? key, required this.title, required this.authors, required this.text}) : super(key: key);
+  const BookPanelContent({super.key, required this.title, required this.authors, required this.text});
 
   @override
   State<BookPanelContent> createState() => _BookPanelContentState();
